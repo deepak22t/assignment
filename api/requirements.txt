@@ -1,4 +1,10 @@
 # Vercel serverless function requirements
-# This file references backend requirements
--r ../backend/requirements.txt
-
+# All dependencies needed for FastAPI backend
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+python-multipart==0.0.6
+pymongo==4.6.0
+openai==1.3.0
+python-dotenv==1.0.0
+mangum==0.17.0
