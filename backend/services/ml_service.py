@@ -229,6 +229,15 @@ class MLModelService:
         )
 
 
-# Global instance
-ml_service = MLModelService()
+# Global instance - wrapped in try-except to prevent import-time crashes
+try:
+    ml_service = MLModelService()
+except Exception as e:
+    print(f"⚠️ Failed to initialize ML service: {e}")
+    # Create a dummy service that reports as unavailable
+    class DummyMLService:
+        def is_available(self): return False
+        def predict(self, *args, **kwargs): raise Exception("ML service not available")
+        def predict_from_property_data(self, *args, **kwargs): raise Exception("ML service not available")
+    ml_service = DummyMLService()
 

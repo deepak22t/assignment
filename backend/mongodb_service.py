@@ -111,6 +111,16 @@ class MongoDBService:
             print(f"Error clearing chat history: {e}")
             return False
 
-# Global instance
-mongodb_service = MongoDBService()
+# Global instance - wrapped in try-except to prevent import-time crashes
+try:
+    mongodb_service = MongoDBService()
+except Exception as e:
+    print(f"⚠️ Failed to initialize MongoDB service: {e}")
+    # Create a dummy service that uses in-memory storage
+    class DummyMongoDBService:
+        def save_property(self, *args, **kwargs): return True
+        def get_saved_properties(self, *args, **kwargs): return []
+        def delete_saved_property(self, *args, **kwargs): return True
+        def is_available(self): return False
+    mongodb_service = DummyMongoDBService()
 
