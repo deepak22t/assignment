@@ -4,14 +4,20 @@ This file allows FastAPI to run on Vercel's serverless platform
 """
 import sys
 import os
+from pathlib import Path
+
+# Get absolute paths
+api_dir = Path(__file__).parent.absolute()
+backend_path = api_dir.parent / 'backend'
 
 # Add backend directory to Python path
-backend_path = os.path.join(os.path.dirname(__file__), '..', 'backend')
-sys.path.insert(0, backend_path)
+sys.path.insert(0, str(backend_path))
 
-# Change to backend directory to ensure relative imports work
-os.chdir(backend_path)
+# Set environment variables for proper path resolution
+os.environ['BACKEND_DIR'] = str(backend_path)
+os.environ['DATA_DIR'] = str(backend_path / 'data')
 
+# Import after setting up paths
 from main import app
 from mangum import Mangum
 

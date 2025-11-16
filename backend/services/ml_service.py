@@ -64,8 +64,14 @@ sys.modules[__name__].ComplexTrapModelRenamed = ComplexTrapModelRenamed
 class MLModelService:
     """Service for managing ML model operations"""
     
-    def __init__(self, model_path: str = 'complex_price_model_v2.pkl'):
+    def __init__(self, model_path: str = None):
         self.model = None
+        # Use absolute path if provided, otherwise resolve relative to backend directory
+        if model_path is None:
+            import os
+            from pathlib import Path
+            backend_dir = Path(os.getenv('BACKEND_DIR', Path(__file__).parent.parent))
+            model_path = str(backend_dir / 'complex_price_model_v2.pkl')
         self.model_path = model_path
         self._load_model()
     
