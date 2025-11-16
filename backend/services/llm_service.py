@@ -13,8 +13,14 @@ class LLMService:
     def __init__(self):
         api_key = os.getenv("OPENAI_API_KEY")
         if api_key:
-            self.client = OpenAI(api_key=api_key)
-            self.enabled = True
+            try:
+                # Initialize OpenAI client with error handling
+                self.client = OpenAI(api_key=api_key)
+                self.enabled = True
+            except Exception as e:
+                print(f"⚠️ Failed to initialize OpenAI client: {e}")
+                self.client = None
+                self.enabled = False
         else:
             self.client = None
             self.enabled = False
