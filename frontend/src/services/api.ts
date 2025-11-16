@@ -4,7 +4,10 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Property, ChatResponse, PropertyFilter, ComparisonResponse } from '../types';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+// For Vercel deployment, use relative paths (same domain)
+// For local development, use the backend URL
+const API_BASE_URL = process.env.REACT_APP_API_URL || 
+  (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8000');
 
 const api: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
