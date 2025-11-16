@@ -2,15 +2,37 @@
 import os
 import json
 from typing import Dict, Optional, Any
-from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Lazy import OpenAI to avoid import errors
+_openai_available = False
+try:
+    from openai import OpenAI
+    _openai_available = True
+except ImportError as e:
+    print(f"⚠️ OpenAI library not available: {e}")
 
 class LLMService:
     """Service for LLM-based intent detection and response generation"""
     
     def __init__(self):
+        self.client = None
+        self.enabled = False
+        self._initialized = False
+    
+    def _ensure_initialized(self):
+        """Lazy initialization - only initialize when first needed"""
+        if self._initialized:
+            return
+        
+        self._initialized = True
+        
+        if not _openai_available:
+            print("⚠️ OpenAI library not available. LLM features disabled.")
+            return
+        
         api_key = os.getenv("OPENAI_API_KEY")
         if api_key:
             try:
@@ -28,6 +50,7 @@ class LLMService:
     
     def extract_preferences(self, user_message: str) -> Dict[str, Any]:
         """Use LLM to extract property search preferences from user message"""
+        self._ensure_initialized()
         if not self.enabled:
             return {}
         
@@ -73,6 +96,7 @@ Return ONLY the JSON object, no other text:"""
     
     def extract_property_name(self, user_message: str) -> Optional[str]:
         """Use LLM to extract specific property name/title from user message"""
+        self._ensure_initialized()
         if not self.enabled:
             return None
         
@@ -122,6 +146,7 @@ Return ONLY the property name as a string, or null if no specific property is me
         preferences: Dict[str, Any]
     ) -> str:
         """Use LLM to generate a natural, conversational response"""
+        self._ensure_initialized()
         if not self.enabled:
             return self._fallback_response(properties, preferences)
         
@@ -179,6 +204,6 @@ Response:"""
         return f"I found {count} properties for you. The most affordable option is {cheapest.get('title', 'a property')} at ${cheapest.get('price', 0):,.0f}."
 
 
-# Global instance
+# Global instance - lazy initialization prevents import-time errors
 llm_service = LLMService()
 
