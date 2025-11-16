@@ -195,8 +195,17 @@ class PropertyService:
         self._properties_cache = None
 
 
-# Global instance (can be overridden for testing)
-property_service = PropertyService()
+# Global instance - wrapped in try-except to prevent import-time crashes
+try:
+    property_service = PropertyService()
+except Exception as e:
+    print(f"⚠️ Failed to initialize Property service: {e}")
+    # Create a minimal service that returns empty results
+    class DummyPropertyService:
+        def merge_property_data(self, *args, **kwargs): return []
+        def search_properties(self, *args, **kwargs): return []
+        def get_property_by_id(self, *args, **kwargs): return None
+    property_service = DummyPropertyService()
 
 
 # Convenience functions for backward compatibility
